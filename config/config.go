@@ -9,10 +9,16 @@ import (
 
 type Config struct {
 	Server ServerConfig
+	Logger LoggerConfig
 }
 
 type ServerConfig struct {
 	Port string
+}
+
+type LoggerConfig struct {
+	Encoding string
+	Level    string
 }
 
 func LoadConfig(filename string) (*viper.Viper, error) {

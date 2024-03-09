@@ -2,6 +2,7 @@ package main
 
 import (
 	"firdausyusofs/kem_digital/config"
+	"firdausyusofs/kem_digital/pkg/logger"
 	"log"
 )
 
@@ -18,5 +19,9 @@ func main() {
 		log.Fatalf("Error parsing config file: %s", err)
 	}
 
-	log.Printf("Config: %+v", cfg)
+	// Initialize logger
+	logger := logger.NewApiLogger(cfg)
+	logger.InitLogger()
+
+	logger.Info("Hello, World!")
 }
