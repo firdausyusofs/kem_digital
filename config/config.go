@@ -10,6 +10,7 @@ import (
 type Config struct {
 	Server ServerConfig
 	Logger LoggerConfig
+	MySQL  MySQLConfig
 }
 
 type ServerConfig struct {
@@ -19,6 +20,15 @@ type ServerConfig struct {
 type LoggerConfig struct {
 	Encoding string
 	Level    string
+}
+
+type MySQLConfig struct {
+	Host     string
+	DBName   string
+	User     string
+	Password string
+	Port     string
+	Driver   string
 }
 
 func LoadConfig(filename string) (*viper.Viper, error) {

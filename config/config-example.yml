@@ -4,3 +4,11 @@ Server:
 Logger:
   Encoding: json
   Level: Info
+
+MySQL:
+  Host: localhost
+  Driver: mysql
+  DBName: db_example
+  User: root
+  Password: 
+  Port: 3306

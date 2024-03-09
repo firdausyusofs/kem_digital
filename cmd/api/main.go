@@ -2,6 +2,7 @@ package main
 
 import (
 	"firdausyusofs/kem_digital/config"
+	"firdausyusofs/kem_digital/pkg/db/mysql"
 	"firdausyusofs/kem_digital/pkg/logger"
 	"log"
 )
@@ -23,5 +24,11 @@ func main() {
 	logger := logger.NewApiLogger(cfg)
 	logger.InitLogger()
 
-	logger.Info("Hello, World!")
+	// Connect to MySQL
+	_, err = mysql.NewMySQLDB(cfg)
+	if err != nil {
+		logger.Fatalf("Error connecting to MySQL: %s", err)
+	} else {
+		logger.Infof("Connected to MySQL")
+	}
 }
