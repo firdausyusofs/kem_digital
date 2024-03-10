@@ -2,6 +2,7 @@ package main
 
 import (
 	"firdausyusofs/kem_digital/config"
+	"firdausyusofs/kem_digital/internal/server"
 	"firdausyusofs/kem_digital/pkg/db/mysql"
 	"firdausyusofs/kem_digital/pkg/logger"
 	"log"
@@ -25,10 +26,16 @@ func main() {
 	logger.InitLogger()
 
 	// Connect to MySQL
-	_, err = mysql.NewMySQLDB(cfg)
+	db, err := mysql.NewMySQLDB(cfg)
 	if err != nil {
 		logger.Fatalf("Error connecting to MySQL: %s", err)
 	} else {
 		logger.Infof("Connected to MySQL")
+	}
+
+	// Start server
+	s := server.NewServer(cfg, db, logger)
+	if err := s.Start(); err != nil {
+		logger.Fatalf("Error starting server: %s", err)
 	}
 }
