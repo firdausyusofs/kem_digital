@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"firdausyusofs/kem_digital/config"
+	"firdausyusofs/kem_digital/internal/models"
 	"fmt"
 
 	"gorm.io/driver/mysql"
@@ -16,6 +17,8 @@ func NewMySQLDB(c *config.Config) (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	db.AutoMigrate(&models.Product{})
 
 	return db, nil
 }
