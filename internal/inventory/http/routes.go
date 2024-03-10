@@ -9,4 +9,5 @@ import (
 func MakeInventoryRoutes(group *echo.Group, h inventory.Handlers) {
 	group.GET("/inventory", h.GetProducts())
 	group.GET("/inventory/:product_id", h.GetProductByID())
+	group.POST("/add-inventory", h.CreateProduct())
 }

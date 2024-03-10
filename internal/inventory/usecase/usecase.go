@@ -29,3 +29,7 @@ func (u *inventoryUseCase) GetProducts(ctx context.Context) ([]*models.Product, 
 func (u *inventoryUseCase) GetProductByID(ctx context.Context, id int64) (*models.Product, error) {
 	return u.inventoryRepo.GetProductByID(ctx, id)
 }
+
+func (u *inventoryUseCase) CreateProduct(ctx context.Context, product *models.Product) (*models.Product, error) {
+	return u.inventoryRepo.CreateProduct(ctx, product)
+}

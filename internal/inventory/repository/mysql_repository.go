@@ -39,7 +39,12 @@ func (r *inventoryRepository) GetProductByID(ctx context.Context, id int64) (*mo
 }
 
 func (r *inventoryRepository) CreateProduct(ctx context.Context, product *models.Product) (*models.Product, error) {
-	return nil, nil
+	result := r.db.Create(&product)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return product, nil
 }
 
 func (r *inventoryRepository) UpdateProduct(ctx context.Context, product *models.Product) error {

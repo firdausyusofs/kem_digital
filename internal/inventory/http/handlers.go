@@ -3,8 +3,10 @@ package http
 import (
 	"firdausyusofs/kem_digital/config"
 	"firdausyusofs/kem_digital/internal/inventory"
+	"firdausyusofs/kem_digital/internal/models"
 	"firdausyusofs/kem_digital/pkg/api_response"
 	"firdausyusofs/kem_digital/pkg/logger"
+	"firdausyusofs/kem_digital/pkg/utils"
 	"net/http"
 	"strconv"
 
@@ -52,5 +54,23 @@ func (h *inventoryHandler) GetProductByID() echo.HandlerFunc {
 		}
 
 		return c.JSON(api_response.MakeSuccessResponse(http.StatusOK, "Successfully retrieved product", &product))
+	}
+}
+
+func (h *inventoryHandler) CreateProduct() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		product := &models.Product{}
+		if err := utils.ReadBody(c, product); err != nil {
+			errMsg := err.Error()
+			return c.JSON(api_response.MakeErrorResponse(http.StatusBadRequest, "Invalid request body", &errMsg))
+		}
+
+		createdProduct, err := h.inventoryUC.CreateProduct(c.Request().Context(), product)
+		if err != nil {
+			errMsg := err.Error()
+			return c.JSON(api_response.MakeErrorResponse(http.StatusInternalServerError, "Failed to create product", &errMsg))
+		}
+
+		return c.JSON(api_response.MakeSuccessResponse(http.StatusCreated, "Successfully created product", &createdProduct))
 	}
 }
