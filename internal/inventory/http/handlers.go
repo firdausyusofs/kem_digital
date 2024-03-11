@@ -29,7 +29,14 @@ func NewInventoryHandler(cfg *config.Config, inventoryUC inventory.UseCase, logg
 
 func (h *inventoryHandler) GetProducts() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		products, err := h.inventoryUC.GetProducts(c.Request().Context())
+		// Initiate pagination query
+		pq, err := utils.NewPaginationQuery(c)
+		if err != nil {
+			errMsg := err.Error()
+			return c.JSON(api_response.MakeErrorResponse(http.StatusBadRequest, "Invalid pagination query", &errMsg))
+		}
+
+		products, err := h.inventoryUC.GetProducts(c.Request().Context(), pq)
 		if err != nil {
 			errMsg := err.Error()
 			return c.JSON(api_response.MakeErrorResponse(http.StatusNotFound, "Failed to retrieve products", &errMsg))

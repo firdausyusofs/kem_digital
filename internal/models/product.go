@@ -16,3 +16,12 @@ type Product struct {
 	UpdatedAt   time.Time      `json:"updated_at"`
 	DeletedAt   gorm.DeletedAt `json:"deleted_at"`
 }
+
+type ProductList struct {
+	TotalCount int        `json:"total_count"`
+	TotalPages int        `json:"total_pages"`
+	Page       int        `json:"page"`
+	Limit      int        `json:"limit"`
+	HasMore    bool       `json:"has_more"`
+	Data       []*Product `json:"data"`
+}

@@ -6,6 +6,7 @@ import (
 	"firdausyusofs/kem_digital/internal/inventory"
 	"firdausyusofs/kem_digital/internal/models"
 	"firdausyusofs/kem_digital/pkg/logger"
+	"firdausyusofs/kem_digital/pkg/utils"
 )
 
 type inventoryUseCase struct {
@@ -22,8 +23,8 @@ func NewInventoryUseCase(cfg *config.Config, inventoryRepo inventory.Repository,
 	}
 }
 
-func (u *inventoryUseCase) GetProducts(ctx context.Context) ([]*models.Product, error) {
-	return u.inventoryRepo.GetProducts(ctx)
+func (u *inventoryUseCase) GetProducts(ctx context.Context, pq *utils.PaginationQuery) (*models.ProductList, error) {
+	return u.inventoryRepo.GetProducts(ctx, pq)
 }
 
 func (u *inventoryUseCase) GetProductByID(ctx context.Context, id int64) (*models.Product, error) {
