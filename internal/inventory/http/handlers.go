@@ -74,3 +74,42 @@ func (h *inventoryHandler) CreateProduct() echo.HandlerFunc {
 		return c.JSON(api_response.MakeSuccessResponse(http.StatusCreated, "Successfully created product", &createdProduct))
 	}
 }
+
+func (h *inventoryHandler) UpdateProduct() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		productID, err := strconv.ParseInt(c.Param("product_id"), 10, 64)
+		if err != nil {
+			return c.JSON(api_response.MakeErrorResponse(http.StatusBadRequest, "Invalid product ID", nil))
+		}
+
+		product := &models.Product{}
+		product.ID = uint(productID)
+
+		if err := utils.ReadBody(c, product); err != nil {
+			return c.JSON(api_response.MakeErrorResponse(http.StatusBadRequest, "Invalid request body", nil))
+		}
+
+		updatedProduct, err := h.inventoryUC.UpdateProduct(c.Request().Context(), product)
+		if err != nil {
+			return c.JSON(api_response.MakeErrorResponse(http.StatusInternalServerError, "Failed to update product", nil))
+		}
+
+		return c.JSON(api_response.MakeSuccessResponse(http.StatusOK, "Successfully updated product", &updatedProduct))
+	}
+}
+
+func (h *inventoryHandler) DeleteProduct() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		productID, err := strconv.ParseInt(c.Param("product_id"), 10, 64)
+		if err != nil {
+			return c.JSON(api_response.MakeErrorResponse(http.StatusBadRequest, "Invalid product ID", nil))
+		}
+
+		err = h.inventoryUC.DeleteProduct(c.Request().Context(), productID)
+		if err != nil {
+			return c.JSON(api_response.MakeErrorResponse(http.StatusInternalServerError, "Failed to delete product", nil))
+		}
+
+		return c.JSON(api_response.MakeSuccessResponse(http.StatusOK, "Successfully deleted product", nil))
+	}
+}

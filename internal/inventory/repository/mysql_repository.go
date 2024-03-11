@@ -47,10 +47,20 @@ func (r *inventoryRepository) CreateProduct(ctx context.Context, product *models
 	return product, nil
 }
 
-func (r *inventoryRepository) UpdateProduct(ctx context.Context, product *models.Product) error {
-	return nil
+func (r *inventoryRepository) UpdateProduct(ctx context.Context, product *models.Product) (*models.Product, error) {
+	result := r.db.Model(&product).Updates(&product)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return product, nil
 }
 
 func (r *inventoryRepository) DeleteProduct(ctx context.Context, id int64) error {
+	result := r.db.Delete(&models.Product{}, id)
+	if result.Error != nil {
+		return result.Error
+	}
+
 	return nil
 }

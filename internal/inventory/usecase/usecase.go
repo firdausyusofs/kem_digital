@@ -33,3 +33,11 @@ func (u *inventoryUseCase) GetProductByID(ctx context.Context, id int64) (*model
 func (u *inventoryUseCase) CreateProduct(ctx context.Context, product *models.Product) (*models.Product, error) {
 	return u.inventoryRepo.CreateProduct(ctx, product)
 }
+
+func (u *inventoryUseCase) UpdateProduct(ctx context.Context, product *models.Product) (*models.Product, error) {
+	return u.inventoryRepo.UpdateProduct(ctx, product)
+}
+
+func (u *inventoryUseCase) DeleteProduct(ctx context.Context, id int64) error {
+	return u.inventoryRepo.DeleteProduct(ctx, id)
+}
