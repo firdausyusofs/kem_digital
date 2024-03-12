@@ -7,14 +7,15 @@ import (
 )
 
 type Product struct {
-	ID          uint           `gorm:"primarykey" json:"id"`
-	Name        string         `json:"name" validate:"required"`
-	Price       float64        `json:"price"`
-	ImageURL    *string        `json:"image_url"`
-	IsAvailable bool           `gorm:"default:true" json:"is_available"`
+	ID          uint           `gorm:"primarykey" json:"id" faker:"-"`
+	Name        string         `json:"name" validate:"required" faker:"-"`
+	Description *string        `json:"description" faker:"paragraph"`
+	Price       float64        `json:"price" faker:"amount"`
+	ImageURL    *string        `json:"image_url" faker:"-"`
+	IsAvailable bool           `gorm:"default:true" json:"is_available" faker:"-"`
 	CreatedAt   time.Time      `json:"created_at"`
 	UpdatedAt   time.Time      `json:"updated_at"`
-	DeletedAt   gorm.DeletedAt `json:"deleted_at"`
+	DeletedAt   gorm.DeletedAt `json:"deleted_at" faker:"-"`
 }
 
 type ProductList struct {
