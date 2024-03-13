@@ -18,7 +18,7 @@ func NewMySQLDB(c *config.Config) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	db.AutoMigrate(&models.Product{})
+	db.AutoMigrate(&models.Product{}, &models.Supplier{})
 
 	return db, nil
 }

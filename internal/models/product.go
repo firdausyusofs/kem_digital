@@ -11,11 +11,12 @@ type Product struct {
 	Name        string         `json:"name" validate:"required" faker:"-"`
 	Description *string        `json:"description" faker:"paragraph"`
 	Price       float64        `json:"price" faker:"amount"`
-	ImageURL    *string        `json:"image_url" faker:"-"`
 	IsAvailable bool           `gorm:"default:true" json:"is_available" faker:"-"`
+	SupplierID  uint           `json:"supplier_id" faker:"-"`
+	Supplier    *Supplier      `json:"supplier" faker:"-"`
 	CreatedAt   time.Time      `json:"created_at"`
 	UpdatedAt   time.Time      `json:"updated_at"`
-	DeletedAt   gorm.DeletedAt `json:"deleted_at" faker:"-"`
+	DeletedAt   gorm.DeletedAt `json:"-" faker:"-"`
 }
 
 type ProductList struct {

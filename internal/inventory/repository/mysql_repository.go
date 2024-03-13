@@ -40,7 +40,7 @@ func (r *inventoryRepository) GetProducts(ctx context.Context, pq *utils.Paginat
 
 	products := make([]*models.Product, 0)
 	order := "id" + " " + pq.GetOrderBy()
-	result = r.db.Limit(pq.GetLimit()).Offset(pq.GetOffset()).Order(order).Find(&products)
+	result = r.db.Limit(pq.GetLimit()).Offset(pq.GetOffset()).Order(order).Preload("Supplier").Find(&products)
 	if result.Error != nil {
 		return nil, result.Error
 	}
