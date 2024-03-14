@@ -7,6 +7,7 @@ import (
 	"firdausyusofs/kem_digital/internal/auth"
 	"firdausyusofs/kem_digital/internal/models"
 	"firdausyusofs/kem_digital/pkg/logger"
+	"firdausyusofs/kem_digital/pkg/utils"
 )
 
 type authUseCase struct {
@@ -23,7 +24,7 @@ func NewAuthUseCase(cfg *config.Config, authRepo auth.Repository, logger logger.
 	}
 }
 
-func (u *authUseCase) Register(ctx context.Context, user *models.User) (*models.User, error) {
+func (u *authUseCase) Register(ctx context.Context, user *models.User) (*models.UserWithToken, error) {
 	existingUser, err := u.authRepo.FindByEmail(ctx, user)
 	if existingUser != nil || err == nil {
 		u.logger.Error(err)
@@ -40,10 +41,18 @@ func (u *authUseCase) Register(ctx context.Context, user *models.User) (*models.
 	}
 	createdUser.ClearPassword()
 
-	return createdUser, nil
+	token, err := utils.GenerateToken(existingUser, u.cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	return &models.UserWithToken{
+		User:  createdUser,
+		Token: token,
+	}, nil
 }
 
-func (u *authUseCase) Login(ctx context.Context, user *models.User) (*models.User, error) {
+func (u *authUseCase) Login(ctx context.Context, user *models.User) (*models.UserWithToken, error) {
 	existingUser, err := u.authRepo.FindByEmail(ctx, user)
 	if err != nil {
 		return nil, err
@@ -54,5 +63,13 @@ func (u *authUseCase) Login(ctx context.Context, user *models.User) (*models.Use
 
 	existingUser.ClearPassword()
 
-	return existingUser, nil
+	token, err := utils.GenerateToken(existingUser, u.cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	return &models.UserWithToken{
+		User:  existingUser,
+		Token: token,
+	}, nil
 }

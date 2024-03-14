@@ -14,7 +14,8 @@ type Config struct {
 }
 
 type ServerConfig struct {
-	Port string
+	Port      string
+	JWTSecret string
 }
 
 type LoggerConfig struct {

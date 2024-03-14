@@ -35,3 +35,8 @@ func (u *User) ComparePassword(password string) error {
 func (u *User) ClearPassword() {
 	u.Password = ""
 }
+
+type UserWithToken struct {
+	User  *User  `json:"user"`
+	Token string `json:"token"`
+}
