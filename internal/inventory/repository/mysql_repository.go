@@ -57,7 +57,7 @@ func (r *inventoryRepository) GetProducts(ctx context.Context, pq *utils.Paginat
 
 func (r *inventoryRepository) GetProductByID(ctx context.Context, id int64) (*models.Product, error) {
 	var product *models.Product
-	result := r.db.First(&product, id)
+	result := r.db.Preload("Supplier").First(&product, id)
 	if result.Error != nil {
 		return nil, result.Error
 	}
