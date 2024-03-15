@@ -5,6 +5,8 @@ import (
 	"firdausyusofs/kem_digital/internal/inventory"
 	inventoryRepo "firdausyusofs/kem_digital/internal/inventory/repository"
 	"firdausyusofs/kem_digital/internal/models"
+	"firdausyusofs/kem_digital/internal/role"
+	roleRepo "firdausyusofs/kem_digital/internal/role/repository"
 	"firdausyusofs/kem_digital/internal/supplier"
 	supplierRepo "firdausyusofs/kem_digital/internal/supplier/repository"
 	"firdausyusofs/kem_digital/pkg/logger"
@@ -30,9 +32,15 @@ func (s *Seeder) Run() error {
 	// Init repositories
 	inventoryRepo := inventoryRepo.NewInventoryRepository(s.db)
 	supplierRepo := supplierRepo.NewSupplierRepository(s.db)
+	roleRepo := roleRepo.NewRoleRepository(s.db)
 
 	// Seed suppliers
 	if err := s.seedSuppliers(supplierRepo); err != nil {
+		return err
+	}
+
+	// Seed roles
+	if err := s.seedRoles(roleRepo); err != nil {
 		return err
 	}
 
@@ -59,6 +67,29 @@ func (s *Seeder) seedSuppliers(repo supplier.Repository) error {
 
 		s.logger.Info("Supplier created: ID ", createSupplier.ID)
 	}
+
+	return nil
+}
+
+func (s *Seeder) seedRoles(repo role.Repository) error {
+	s.logger.Info("Creating guest and admin roles")
+	guestRole := &models.Role{
+		Name: "Guest",
+	}
+	createGuestRole, err := repo.CreateRole(context.Background(), guestRole)
+	if err != nil {
+		return err
+	}
+	s.logger.Info("Role created: ID ", createGuestRole.ID)
+
+	adminRole := &models.Role{
+		Name: "Admin",
+	}
+	createAdminRole, err := repo.CreateRole(context.Background(), adminRole)
+	if err != nil {
+		return err
+	}
+	s.logger.Info("Role created: ID ", createAdminRole.ID)
 
 	return nil
 }
