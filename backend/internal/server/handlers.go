@@ -15,6 +15,7 @@ import (
 	supplierUC "firdausyusofs/kem_digital/internal/supplier/usecase"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func (s *Server) MakeHandlers(e *echo.Echo) error {
@@ -35,6 +36,11 @@ func (s *Server) MakeHandlers(e *echo.Echo) error {
 	supplierHandlers := supplierHttp.NewSupplierHandler(s.cfg, supplierUC, s.logger)
 	authHandlers := authHttp.NewAuthHandler(s.cfg, authUC, s.logger)
 	roleHandlers := roleHttp.NewRoleHandler(s.cfg, roleUC, s.logger)
+
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderXRequestID},
+	}))
 
 	api := e.Group("/api")
 

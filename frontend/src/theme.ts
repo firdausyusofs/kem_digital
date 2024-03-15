@@ -192,33 +192,16 @@ export const theme = createTheme({
           root: {},
           content: {
             background: '#fff',
-            borderRadius: rem(24),
+            borderRadius: rem(8),
+            padding: rem(16),
             border: '1px solid D2D6DB'
-          },
-          header: {
-            padding: rem(24),
-            justifyContent: 'center',
-            // background: 'transparent'
-            background: '#fff'
           },
           title: {
             color: 'var(--Base-Black, #000)',
-            fontSize: rem(32),
             fontStyle: 'normal',
-            fontWeight: 700,
-            lineHeight: rem(48)
-          },
-          close: {
-            position: 'absolute',
-            right: rem(16),
-            top: rem(16)
-          },
-          body: {
-            padding: rem(24),
-            paddingTop: 0,
           },
           overlay:{
-            background: 'rgba(0, 0, 0, 0.15)',
+            background: 'rgba(0, 0, 0, 0.35)',
             backdropFilter: 'blur(10px)'
           }
         };
