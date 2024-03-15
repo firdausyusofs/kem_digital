@@ -1,0 +1,15 @@
+Server:
+  Port: :8000
+  JWTSecret: 27125fc9419cae1bd0fe4dcd7e7a475664d5058af4724e3ea45cc5286450d3a0
+
+Logger:
+  Encoding: json
+  Level: Info
+
+MySQL:
+  Host: localhost
+  Driver: mysql
+  DBName: kem_digital
+  User: root
+  Password: 
+  Port: 3306
