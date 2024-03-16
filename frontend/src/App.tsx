@@ -1,15 +1,9 @@
-import { createTheme, MantineProvider } from '@mantine/core';
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import InventoryScreen from './screens/InventoryScreen';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import { AppContainer } from './views/Layout/AppContainer';
-
-const theme = createTheme({
-  fontFamily: 'Montserrat, sans-serif',
-  primaryColor: 'teal',
-});
 
 const App: React.FC = () => {
   return (

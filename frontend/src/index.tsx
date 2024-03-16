@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import "@mantine/core/styles.css";
+import 'mantine-react-table/styles.css'; //import MRT styles
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import MantineRoot from './MantineRoot';

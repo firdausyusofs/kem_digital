@@ -1,4 +1,4 @@
-import { Button, Flex, Modal, Pagination, Paper, rem, Table, Title, Text } from '@mantine/core';
+import { Button, Flex, Modal, Pagination, Paper, rem, Table, Title, Text, Box, Group, MenuItem, Container } from '@mantine/core';
 import { modals } from "@mantine/modals";
 import { useDisclosure } from '@mantine/hooks';
 import React from 'react';
@@ -7,50 +7,150 @@ import PencilIcon from '../../icons/PencilIcon';
 import PlusIcon from '../../icons/PlusIcon';
 import TrashIcon from "../../icons/TrashIcon";
 import { useAppDispatch, useAppSelector } from '../../redux/store'
-import { fetchProducts } from "../../redux/features/inventory_slice"
+import { deleteProduct, fetchProducts, resetSelectedProduct, setSelectedProduct } from "../../redux/features/inventory_slice"
+import { MantineReactTable, useMantineReactTable, type MRT_ColumnDef, type MRT_PaginationState } from "mantine-react-table";
+
+type ProductColumn = {
+    index: number;
+    name: string;
+    description: string;
+    price: number;
+    supplier: string;
+}
 
 const InventoryScreen: React.FC = () => {
     const dispatch = useAppDispatch();
-    const { products, total_pages, loading } = useAppSelector(state => state.inventoryReducer)
+    const { products, total_pages, loading, actionLoading, selectedProduct } = useAppSelector(state => state.inventoryReducer)
     const [opened, {open, close}] = useDisclosure(false);
+    const [pagination, setPagination] = React.useState<MRT_PaginationState>({
+        pageIndex: 0,
+        pageSize: 10,
+    });
+
     const openDeleteModal = () => modals.openConfirmModal({
-      title: 'Delete this product',
-      centered: true,
-      children: (
-        <Text size="sm">
-            Are you sure you want to delete this product?
-        </Text>
-      ),
-      labels: { confirm: 'Delete', cancel: "Cancel" },
-      confirmProps: { color: 'red' },
-      onCancel: () => console.log('Cancel'),
-      onConfirm: () => console.log('Confirmed'),
+        title: 'Delete this product',
+        centered: true,
+        children: (
+            <Text size="sm">
+                Are you sure you want to delete this product?
+            </Text>
+        ),
+        labels: { confirm: 'Delete', cancel: "Cancel" },
+        confirmProps: { color: 'red' },
+        onCancel: () => {
+            dispatch(resetSelectedProduct());
+        },
+        onConfirm: () => {
+            if (selectedProduct) handleDelete(selectedProduct.id)
+        }
     });
 
     React.useEffect(() => {
-        dispatch(fetchProducts());
-    }, []);
+        if (!actionLoading) {
+            dispatch(fetchProducts({ page: pagination.pageIndex + 1, limit: pagination.pageSize }));
+        }
+    }, [pagination, actionLoading]);
+
+    const columns = React.useMemo<MRT_ColumnDef<ProductColumn>[]>(
+        () => [
+            {
+                accessorKey: "index",
+                header: "No",
+            },
+            {
+                accessorKey: "name",
+                header: "Name",
+            },
+            {
+                accessorKey: "description",
+                header: "Description",
+            },
+            {
+                accessorKey: "price",
+                header: "Price",
+            },
+            {
+                accessorKey: "supplier",
+                header: "Supplier",
+            },
+        ],
+        []
+    );
+
+    const data = React.useMemo(() => {
+        return products.map((product, index) => {
+            return {
+                index: index+1 + ((pagination.pageIndex) * 10), 
+                name: product.name,
+                description: product.description,
+                price: product.price,
+                supplier: product.supplier.name,
+            };
+        });
+    }, [products]);
+
+    const table = useMantineReactTable({
+        columns,
+        data,
+        enableRowActions: true,
+        positionActionsColumn: "last",
+        renderRowActions: ({ renderedRowIndex, row }) =>  (
+            <Group justify="center">
+                <Button 
+                    variant="lf_primarybtn" 
+                    radius="xl" 
+                    leftSection={<PencilIcon />}
+                    onClick={() => {
+                        dispatch(setSelectedProduct(products[row.index]));
+                        open();
+                    }}
+                >
+                    Edit
+                </Button>
+                <Button 
+                    variant="lf_dangerbtn"
+                    radius="xl"
+                    leftSection={<TrashIcon />}
+                    onClick={() => {
+                        dispatch(setSelectedProduct(products[row.index]));
+                        openDeleteModal();
+                    }}
+                >
+                    Delete
+                </Button>
+            </Group>
+        ),
+        manualPagination: true,
+        rowCount: total_pages * 10,
+        onPaginationChange: setPagination,
+        state: {
+            isLoading: loading,
+            pagination,
+        },
+        paginationDisplayMode: "pages"
+    })
+
+    const handleDelete = (id: string) => {
+        dispatch(deleteProduct(id));
+    }
 
     return (
-        <>
+        <Container size="xl">
             <Modal 
                 opened={opened} 
-                onClose={close} 
+                onClose={() => {
+                    close();
+                    dispatch(resetSelectedProduct());
+                }}
                 size="lg"
-                title="Add Product"
+                title={selectedProduct ? "Edit Product" : "Add Product" }
                 centered
             >
-                <CreateProduct />
+                <CreateProduct close={close} />
             </Modal>
-            <Paper 
-                withBorder p="xl" 
-                shadow="sm"
-                radius="md" 
-                m="xl" 
-                mt={rem(110)}
-            >
-                <Flex justify="space-between">
-                    <Title order={1} mb={rem(40)}>Inventory</Title>
+            <Box m="lg" mt={rem(110)}>
+                <Group justify="space-between" align="center" mb={rem(40)}>
+                    <Title order={1}>Inventory</Title>
                     <Button 
                         variant="lf_primarybtn" 
                         radius="xl"
@@ -59,52 +159,10 @@ const InventoryScreen: React.FC = () => {
                     >
                         Add Product
                     </Button>
-                </Flex>
-                <Table>
-                    <Table.Thead>
-                        <Table.Tr>
-                            <Table.Th>Id</Table.Th>
-                            <Table.Th>Name</Table.Th>
-                            <Table.Th>Price</Table.Th>
-                            <Table.Th>Supplier</Table.Th>
-                            <Table.Th>Action</Table.Th>
-                        </Table.Tr>
-                    </Table.Thead>
-                    <Table.Tbody>
-                        {!loading && products.map((product, index) => (
-                            <Table.Tr key={index}>
-                                <Table.Td>{index+1}</Table.Td>
-                                <Table.Td>{product.name}</Table.Td>
-                                <Table.Td>RM {product.price.toFixed(2)}</Table.Td>
-                                <Table.Td>Supplier 1</Table.Td>
-                                <Table.Td>
-                                    <Button 
-                                        variant="lf_primarybtn" 
-                                        radius="xl" 
-                                        mr={rem(5)}
-                                        leftSection={<PencilIcon />}
-                                    >
-                                        Edit
-                                    </Button>
-                                    <Button 
-                                        variant="lf_dangerbtn"
-                                        radius="xl"
-                                        leftSection={<TrashIcon />}
-                                        onClick={openDeleteModal}
-                                    >
-                                        Delete
-                                    </Button>
-                                </Table.Td>
-                            </Table.Tr>
-                        ))}
-                    </Table.Tbody>
-                </Table>
-
-                <Flex justify="end">
-                    <Pagination total={5} mt={rem(60)} />
-                </Flex>
-            </Paper>
-        </>
+                </Group>
+                <MantineReactTable table={table} />
+            </Box>
+        </Container>
   );
 }
 
